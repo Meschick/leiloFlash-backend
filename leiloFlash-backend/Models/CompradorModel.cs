@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using leiloFlash_backend.DTO;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -49,7 +50,15 @@ namespace leiloFlash_backend.Models
         [Column("usuario_id")]
         public int UsuarioId { get; set; }
 
-
+        public CompradorModel( CompradorDTO dto) {
+            Nome = dto.Nome;
+            Email = dto.Email;
+            Cpf = dto.Cpf;
+            Telefone = dto.Telefone;
+            Endereco = new EnderecoModel(dto.Endereco);
+            UsuarioId = dto.UsuarioId;
+            DataCadastro = DateTime.Now;
+        }
 
     }
 }
