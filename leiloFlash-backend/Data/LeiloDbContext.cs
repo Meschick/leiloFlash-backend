@@ -11,14 +11,16 @@ namespace leiloFlash_backend.Data
 
 
         // Tabelas do banco de dados
-        DbSet<CompradorModel> Compradores { get; set; }
-        DbSet<EnderecoModel> Enderecos { get; set; }
+        public DbSet<CompradorModel> Compradores { get; set; }
+        public DbSet<EnderecoModel> Enderecos { get; set; }
+        public DbSet<UsuarioModel> Usuarios { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CompradorModel>().ToTable("Comprador");
             modelBuilder.Entity<EnderecoModel>().ToTable("Endereco");
+            modelBuilder.Entity<UsuarioModel>().ToTable("Usuario");
         }
 
     }
