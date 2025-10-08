@@ -1,9 +1,10 @@
-﻿using leiloFlash_backend.Models;
+﻿using leiloFlash_backend.DTO;
+using leiloFlash_backend.Models;
 
 namespace leiloFlash_backend.Services
 {
     public interface ICompradorService
     {
-        Task CreateComprador(CompradorModel comprador);
+        Task CreateComprador(CompradorDTO comprador);
     }
 }
