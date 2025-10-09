@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace leiloFlash_backend.Services.Auth.Token
+namespace leiloFlash_backend.Services.Auth.Security
 {
     public class TokenService : ITokenService
     {
@@ -34,7 +34,7 @@ namespace leiloFlash_backend.Services.Auth.Token
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddHours(2),
+                expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds
             );
 

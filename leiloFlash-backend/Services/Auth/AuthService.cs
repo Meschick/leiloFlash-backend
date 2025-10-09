@@ -1,5 +1,5 @@
 ﻿using leiloFlash_backend.Data;
-using leiloFlash_backend.Services.Auth.Token;
+using leiloFlash_backend.Services.Auth.Security;
 
 namespace leiloFlash_backend.Services.Auth
 {
@@ -7,11 +7,13 @@ namespace leiloFlash_backend.Services.Auth
     {
         private readonly LeiloDbContext _context;
         private readonly ITokenService _tokenService;
+        private readonly ISenhaService _senhaService;
 
-        public AuthService(LeiloDbContext context, ITokenService tokenService)
+        public AuthService(LeiloDbContext context, ITokenService tokenService, ISenhaService senhaService)
         {
             _context = context;
             _tokenService = tokenService;
+            _senhaService = senhaService;
         }
 
         public async Task<string?> LoginAsync(string email, string senha)
@@ -20,9 +22,9 @@ namespace leiloFlash_backend.Services.Auth
 
             if(user == null) return null;
 
-            if (user.Senha != senha) return null;
+            if (!_senhaService.VerificarSenha(senha, user.Senha)) return null;
 
-            return _tokenService.GenerateToken(user);
+            return _tokenService.GerarToken(user);
         }
     }
 }
