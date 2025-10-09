@@ -2,8 +2,9 @@ using leiloFlash_backend.Data;
 using leiloFlash_backend.Repositories;
 using leiloFlash_backend.Services;
 using leiloFlash_backend.Services.Auth;
-using leiloFlash_backend.Services.Auth.Token;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using leiloFlash_backend.Services.Auth.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 //Configura JWT
-builder.Services.AddAuthentication("Bearer")
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -42,6 +43,7 @@ builder.Services.AddDbContext<LeiloDbContext>(options => options.UseSqlServer(co
 builder.Services.AddScoped<ICompradorService, CompradorService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ISenhaService, SenhaService>();
 
 // Adicionar Repositories
 builder.Services.AddScoped<ICompradorRepository, CompradorRepository>();
