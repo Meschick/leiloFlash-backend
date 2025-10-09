@@ -1,5 +1,6 @@
-﻿using leiloFlash_backend.DTO;
+﻿using leiloFlash_backend.DTO.Auth;
 using leiloFlash_backend.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leiloFlash_backend.Controllers
@@ -16,15 +17,27 @@ namespace leiloFlash_backend.Controllers
             _authService = authService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
 
             var token = await _authService.LoginAsync(loginDto.Email, loginDto.Senha);
-            if (token == null)
-                return Unauthorized("Email ou Senha inválidos");
 
-            return Ok(new { Token = token });
+            if (token == null)
+                return Unauthorized( new LoginResponseDTO {
+                    Sucesso = false,
+                    Mensagem = "Credenciais inválidas",
+                    Timestamp = DateTime.UtcNow
+            });
+
+            return Ok( new LoginResponseDTO
+            {
+                Sucesso = true,
+                Mensagem = "Login realizado com sucesso",
+                Token = token,
+                Timestamp = DateTime.UtcNow
+            });
         }
     }
 }

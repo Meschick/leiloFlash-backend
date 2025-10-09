@@ -1,10 +1,12 @@
-﻿using leiloFlash_backend.DTO;
+﻿using leiloFlash_backend.DTO.Comprador;
 using leiloFlash_backend.Models;
 using leiloFlash_backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leiloFlash_backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class CompradorController : Controller
