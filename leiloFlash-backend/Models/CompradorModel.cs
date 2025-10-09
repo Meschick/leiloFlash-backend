@@ -1,4 +1,4 @@
-﻿using leiloFlash_backend.DTO;
+﻿using leiloFlash_backend.DTO.Comprador;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.ComponentModel.DataAnnotations;
@@ -50,6 +50,7 @@ namespace leiloFlash_backend.Models
         [Column("usuario_id")]
         public int UsuarioId { get; set; }
 
+        public CompradorModel() { }
         public CompradorModel( CompradorDTO dto) {
             Nome = dto.Nome;
             Email = dto.Email;

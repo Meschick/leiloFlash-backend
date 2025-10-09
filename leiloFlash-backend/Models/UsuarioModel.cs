@@ -21,5 +21,10 @@ namespace leiloFlash_backend.Models
 
         [Column("tipo")]
         public string Tipo { get; set; }
+
+
+        public UsuarioModel() { }
     }
+
+       
 }

@@ -1,4 +1,4 @@
-﻿using leiloFlash_backend.DTO;
+﻿using leiloFlash_backend.DTO.Endereco;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,7 +31,7 @@ namespace leiloFlash_backend.Models
         [Column("cidade")]
         public string Cidade { get; set; }
 
-
+        public EnderecoModel() { }
         public EnderecoModel(EnderecoDTO dto) {
             Logradouro = dto.Logradouro;
             Numero = dto.Numero;
