@@ -1,6 +1,7 @@
-﻿using leiloFlash_backend.Models;
+﻿using leiloFlash_backend.DTO.Endereco;
+using leiloFlash_backend.Models;
 
-namespace leiloFlash_backend.DTO
+namespace leiloFlash_backend.DTO.Comprador
 {
     public class CompradorDTO
     {

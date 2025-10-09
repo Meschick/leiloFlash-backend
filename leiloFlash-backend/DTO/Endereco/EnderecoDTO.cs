@@ -1,4 +1,4 @@
-﻿namespace leiloFlash_backend.DTO
+﻿namespace leiloFlash_backend.DTO.Endereco
 {
     public class EnderecoDTO
     {
