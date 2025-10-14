@@ -1,4 +1,6 @@
 ﻿using leiloFlash_backend.DTO.Auth;
+using leiloFlash_backend.DTO.Response;
+using leiloFlash_backend.DTO.Usuario;
 using leiloFlash_backend.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +40,25 @@ namespace leiloFlash_backend.Controllers
                 Token = token,
                 Timestamp = DateTime.UtcNow
             });
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegistrarUsuario([FromBody] UsuarioDTO usuarioDto)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var resultado = await _authService.RegistrarUsuario(usuarioDto);
+
+            if (resultado)
+            {
+                return Ok(new ApiResponseDTO<bool>(true, "Usuário registrado com sucesso!"));
+
+            }
+
+            return BadRequest(new ApiResponseDTO<bool>(false, "Erro ao registrar usuário."));
         }
     }
 }

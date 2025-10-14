@@ -1,5 +1,9 @@
 ﻿using leiloFlash_backend.Data;
+using leiloFlash_backend.DTO.Response;
+using leiloFlash_backend.DTO.Usuario;
+using leiloFlash_backend.Models;
 using leiloFlash_backend.Services.Auth.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace leiloFlash_backend.Services.Auth
 {
@@ -18,13 +22,36 @@ namespace leiloFlash_backend.Services.Auth
 
         public async Task<string?> LoginAsync(string email, string senha)
         {
-             var user = _context.Usuarios.FirstOrDefault(u => u.Email == email && u.Senha == senha);
+             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
 
             if(user == null) return null;
 
             if (!_senhaService.VerificarSenha(senha, user.Senha)) return null;
 
             return _tokenService.GerarToken(user);
+        }
+
+        public async Task<bool> RegistrarUsuario(UsuarioDTO usuarioDTO)
+        {
+            var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuarioDTO.Email);
+
+            if(usuarioExistente is null)
+            {
+                var novoUsuario = new UsuarioModel
+                {
+                    Email = usuarioDTO.Email,
+                    Senha = _senhaService.HashSenha(usuarioDTO.Senha),
+                    Tipo = Enums.TipoUsuarioEnum.Usuario,
+                    StatusUsuario = Enums.StatusEnum.Ativo
+                };
+
+                _context.Usuarios.Add(novoUsuario);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

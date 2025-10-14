@@ -27,7 +27,7 @@ namespace leiloFlash_backend.Services.Auth.Security
             var claims = new[]
             {
             new Claim(ClaimTypes.Name, usuario.Email),
-            new Claim(ClaimTypes.Role, usuario.Tipo)
+              new Claim(ClaimTypes.Role, usuario.Tipo.ToString())
         };
 
             var token = new JwtSecurityToken(

@@ -1,4 +1,4 @@
-﻿namespace leiloFlash_backend.DTO.Auth
+﻿namespace leiloFlash_backend.DTO.Response
 {
     public class LoginResponseDTO
     {

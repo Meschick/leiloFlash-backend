@@ -30,6 +30,7 @@ namespace leiloFlash_backend.Models
         [Required(ErrorMessage = "A cidade é obrigatória")]
         [Column("cidade")]
         public string Cidade { get; set; }
+        public UsuarioModel Usuario { get; set; }
 
         public EnderecoModel() { }
         public EnderecoModel(EnderecoDTO dto) {
