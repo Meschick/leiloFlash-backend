@@ -6,8 +6,6 @@ namespace leiloFlash_backend.DTO.Usuario
     {
         public string Email { get; set; }
         public string Senha { get; set; }
-        public TipoUsuarioEnum TipoUsuario { get; set; }
-        public StatusEnum StatusEnum { get; set; }
 
     }
 }

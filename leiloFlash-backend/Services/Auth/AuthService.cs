@@ -22,9 +22,11 @@ namespace leiloFlash_backend.Services.Auth
 
         public async Task<string?> LoginAsync(string email, string senha)
         {
-             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
 
-            if(user == null) return null;
+
+            if (user == null) return null;
 
             if (!_senhaService.VerificarSenha(senha, user.Senha)) return null;
 
@@ -33,25 +35,33 @@ namespace leiloFlash_backend.Services.Auth
 
         public async Task<bool> RegistrarUsuario(UsuarioDTO usuarioDTO)
         {
-            var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuarioDTO.Email);
-
-            if(usuarioExistente is null)
+            try
             {
-                var novoUsuario = new UsuarioModel
+                var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuarioDTO.Email);
+
+                if (usuarioExistente is null)
                 {
-                    Email = usuarioDTO.Email,
-                    Senha = _senhaService.HashSenha(usuarioDTO.Senha),
-                    Tipo = Enums.TipoUsuarioEnum.Usuario,
-                    StatusUsuario = Enums.StatusEnum.Ativo
-                };
+                    var novoUsuario = new UsuarioModel
+                    {
+                        Email = usuarioDTO.Email,
+                        Senha = _senhaService.HashSenha(usuarioDTO.Senha),
+                        Tipo = Enums.TipoUsuarioEnum.Usuario,
+                        StatusUsuario = Enums.StatusEnum.Ativo
+                    };
 
-                _context.Usuarios.Add(novoUsuario);
-                await _context.SaveChangesAsync();
+                    _context.Usuarios.Add(novoUsuario);
+                    await _context.SaveChangesAsync();
 
-                return true;
+                    return true;
+                }
+
+                return false;
             }
-
-            return false;
+            catch (Exception error)
+            {
+                throw new Exception("Erro ao registrar usuário: " + error.Message);
+            }
+           
         }
     }
 }

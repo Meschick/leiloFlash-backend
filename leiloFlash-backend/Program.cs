@@ -4,6 +4,8 @@ using leiloFlash_backend.Services.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using leiloFlash_backend.Services.Auth.Security;
+using leiloFlash_backend.Services.Leilao;
+using leiloFlash_backend.Repositories.Leilao;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +44,11 @@ builder.Services.AddDbContext<LeiloDbContext>(options => options.UseSqlServer(co
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISenhaService, SenhaService>();
+builder.Services.AddScoped<ILeilaoService, LeilaoService>();
+
 
 // Adicionar Repositories
+builder.Services.AddScoped<ILeilaoRepository, LeilaoRepository>();
 
 var app = builder.Build();
 

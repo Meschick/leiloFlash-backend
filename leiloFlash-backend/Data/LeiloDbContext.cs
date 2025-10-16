@@ -13,11 +13,13 @@ namespace leiloFlash_backend.Data
         // Tabelas do banco de dados
         public DbSet<EnderecoModel> Enderecos { get; set; }
         public DbSet<UsuarioModel> Usuarios { get; set; }
+        public DbSet<LeilaoModel> Leiloes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnderecoModel>().ToTable("Endereco");
+
             modelBuilder.Entity<UsuarioModel>()
                 .ToTable("Usuario")
                 .Property(u => u.Tipo)
@@ -27,6 +29,11 @@ namespace leiloFlash_backend.Data
                .ToTable("Usuario")
                .Property(u => u.StatusUsuario)
                .HasConversion<string>();
+
+            modelBuilder.Entity<LeilaoModel>()
+                .ToTable("Leilao")
+                .Property(l => l.StatusLeilao)
+                .HasConversion<string>();
         }
 
     }
