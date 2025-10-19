@@ -78,6 +78,7 @@ namespace leiloFlash_backend.Services.Leilao
 
             var leiloesDto = leiloes.Select(l => new LeilaoDTO
             {
+                Id = l.Id,
                 Nome = l.Nome,
                 Descricao = l.Descricao,
                 DataInicio = l.DataInicio,

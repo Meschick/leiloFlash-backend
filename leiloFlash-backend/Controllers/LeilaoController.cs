@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using leiloFlash_backend.DTO.Leilao;
+using leiloFlash_backend.DTO.Response;
 using leiloFlash_backend.Services.Leilao;
 
 namespace leiloFlash_backend.Controllers
@@ -15,73 +16,129 @@ namespace leiloFlash_backend.Controllers
             _leilaoService = leilaoService;
         }
 
-        // GET: api/v1/leilao
         [HttpGet]
         public async Task<IActionResult> ListarLeiloes()
         {
             var leiloes = await _leilaoService.ListarLeiloes();
-            return Ok(leiloes); // 200 OK
+
+            var response = new ApiResponseDTO<IEnumerable<LeilaoDTO>>(
+                sucesso: true,
+                mensagem: "Leilões listados com sucesso.",
+                data: leiloes
+            );
+
+            return Ok(response);
         }
 
-        // GET: api/v1/leilao/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> ObterLeilaoPorId(int id)
         {
             try
             {
                 var leilao = await _leilaoService.ObterLeilaoPorId(id);
-                return Ok(leilao); // 200 OK
+                var response = new ApiResponseDTO<LeilaoDTO>(
+                    sucesso: true,
+                    mensagem: "Leilão encontrado com sucesso.",
+                    data: leilao
+                );
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message }); // 404 Not Found
+                var response = new ApiResponseDTO<object>(
+                    sucesso: false,
+                    mensagem: ex.Message
+                );
+                return NotFound(response);
             }
         }
 
-        // POST: api/v1/leilao
         [HttpPost]
         public async Task<IActionResult> CriarLeilao([FromBody] LeilaoDTO leilaoDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                var erroResponse = new ApiResponseDTO<object>(
+                    sucesso: false,
+                    mensagem: "Dados inválidos."
+                );
+                return BadRequest(erroResponse);
+            }
 
             var leilaoCriado = await _leilaoService.CriarLeilaoAsync(leilaoDto);
 
+            var leilaoCriadoDto = new LeilaoDTO
+            {
+                Id = leilaoCriado.Id,
+                Nome = leilaoCriado.Nome,
+                Descricao = leilaoCriado.Descricao,
+                DataInicio = leilaoCriado.DataInicio,
+                DataFim = leilaoCriado.DataFim,
+                UsuarioId = leilaoCriado.UsuarioId
+            };
+
+            var response = new ApiResponseDTO<LeilaoDTO>(
+                sucesso: true,
+                mensagem: "Leilão criado com sucesso.",
+                data: leilaoCriadoDto
+            );
+
+                
             return CreatedAtAction(nameof(ObterLeilaoPorId),
                                    new { id = leilaoCriado.Id },
-                                   leilaoCriado);
+                                   response);
         }
 
-        // PUT: api/v1/leilao/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> AtualizarLeilao(int id, [FromBody] LeilaoDTO leilaoDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState); // 400 Bad Request
+            {
+                var erroResponse = new ApiResponseDTO<object>(
+                    sucesso: false,
+                    mensagem: "Dados inválidos."
+                );
+                return BadRequest(erroResponse);
+            }
 
             try
             {
                 await _leilaoService.AtualizarLeilao(id, leilaoDto);
-                return NoContent(); // 204 No Content
+                var response = new ApiResponseDTO<object>(
+                    sucesso: true,
+                    mensagem: "Leilão atualizado com sucesso."
+                );
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message }); // 404 Not Found
+                var response = new ApiResponseDTO<object>(
+                    sucesso: false,
+                    mensagem: ex.Message
+                );
+                return NotFound(response);
             }
         }
 
-        // DELETE: api/v1/leilao/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletarLeilao(int id)
         {
             try
             {
                 await _leilaoService.DeletarLeilao(id);
-                return NoContent(); // 204 No Content
+                var response = new ApiResponseDTO<object>(
+                    sucesso: true,
+                    mensagem: "Leilão deletado com sucesso."
+                );
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message }); // 404 Not Found
+                var response = new ApiResponseDTO<object>(
+                    sucesso: false,
+                    mensagem: ex.Message
+                );
+                return NotFound(response);
             }
         }
     }
