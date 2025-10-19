@@ -14,6 +14,7 @@ namespace leiloFlash_backend.Data
         public DbSet<EnderecoModel> Enderecos { get; set; }
         public DbSet<UsuarioModel> Usuarios { get; set; }
         public DbSet<LeilaoModel> Leiloes { get; set; }
+        public DbSet<VeiculoModel> Veiculo { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,6 +35,8 @@ namespace leiloFlash_backend.Data
                 .ToTable("Leilao")
                 .Property(l => l.StatusLeilao)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<VeiculoModel>.ToTable("Veiculo")
         }
 
     }
