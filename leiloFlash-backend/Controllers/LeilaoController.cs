@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using leiloFlash_backend.DTO.Leilao;
 using leiloFlash_backend.DTO.Response;
+
 using leiloFlash_backend.Services.Leilao;
+using Microsoft.AspNetCore.Mvc;
 
 namespace leiloFlash_backend.Controllers
 {
@@ -10,37 +12,43 @@ namespace leiloFlash_backend.Controllers
     public class LeilaoController : ControllerBase
     {
         private readonly ILeilaoService _leilaoService;
+        private readonly IMapper _mapper;
 
-        public LeilaoController(ILeilaoService leilaoService)
+        public LeilaoController(ILeilaoService leilaoService, IMapper mapper)
         {
             _leilaoService = leilaoService;
+            _mapper = mapper;
         }
 
+        // GET: api/v1/leilao
         [HttpGet]
         public async Task<IActionResult> ListarLeiloes()
         {
             var leiloes = await _leilaoService.ListarLeiloes();
 
-            var response = new ApiResponseDTO<IEnumerable<LeilaoDTO>>(
+            var response = new ApiResponseDTO<IEnumerable<LeilaoResponseDTO>>(
                 sucesso: true,
                 mensagem: "Leilões listados com sucesso.",
-                data: leiloes
+                data: _mapper.Map<IEnumerable<LeilaoResponseDTO>>(leiloes)
             );
 
             return Ok(response);
         }
 
+        // GET: api/v1/leilao/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> ObterLeilaoPorId(int id)
         {
             try
             {
                 var leilao = await _leilaoService.ObterLeilaoPorId(id);
-                var response = new ApiResponseDTO<LeilaoDTO>(
+
+                var response = new ApiResponseDTO<LeilaoResponseDTO>(
                     sucesso: true,
                     mensagem: "Leilão encontrado com sucesso.",
-                    data: leilao
+                    data: _mapper.Map<LeilaoResponseDTO>(leilao)
                 );
+
                 return Ok(response);
             }
             catch (Exception ex)
@@ -53,6 +61,7 @@ namespace leiloFlash_backend.Controllers
             }
         }
 
+        // POST: api/v1/leilao
         [HttpPost]
         public async Task<IActionResult> CriarLeilao([FromBody] LeilaoDTO leilaoDto)
         {
@@ -67,28 +76,20 @@ namespace leiloFlash_backend.Controllers
 
             var leilaoCriado = await _leilaoService.CriarLeilaoAsync(leilaoDto);
 
-            var leilaoCriadoDto = new LeilaoDTO
-            {
-                Id = leilaoCriado.Id,
-                Nome = leilaoCriado.Nome,
-                Descricao = leilaoCriado.Descricao,
-                DataInicio = leilaoCriado.DataInicio,
-                DataFim = leilaoCriado.DataFim,
-                UsuarioId = leilaoCriado.UsuarioId
-            };
-
-            var response = new ApiResponseDTO<LeilaoDTO>(
+            var response = new ApiResponseDTO<LeilaoResponseDTO>(
                 sucesso: true,
                 mensagem: "Leilão criado com sucesso.",
-                data: leilaoCriadoDto
+                data: _mapper.Map<LeilaoResponseDTO>(leilaoCriado)
             );
 
-                
-            return CreatedAtAction(nameof(ObterLeilaoPorId),
-                                   new { id = leilaoCriado.Id },
-                                   response);
+            return CreatedAtAction(
+                nameof(ObterLeilaoPorId),
+                new { id = leilaoCriado.Id },
+                response
+            );
         }
 
+        // PUT: api/v1/leilao/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> AtualizarLeilao(int id, [FromBody] LeilaoDTO leilaoDto)
         {
@@ -104,10 +105,12 @@ namespace leiloFlash_backend.Controllers
             try
             {
                 await _leilaoService.AtualizarLeilao(id, leilaoDto);
+
                 var response = new ApiResponseDTO<object>(
                     sucesso: true,
                     mensagem: "Leilão atualizado com sucesso."
                 );
+
                 return Ok(response);
             }
             catch (Exception ex)
@@ -120,16 +123,19 @@ namespace leiloFlash_backend.Controllers
             }
         }
 
+        // DELETE: api/v1/leilao/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletarLeilao(int id)
         {
             try
             {
                 await _leilaoService.DeletarLeilao(id);
+
                 var response = new ApiResponseDTO<object>(
                     sucesso: true,
                     mensagem: "Leilão deletado com sucesso."
                 );
+
                 return Ok(response);
             }
             catch (Exception ex)

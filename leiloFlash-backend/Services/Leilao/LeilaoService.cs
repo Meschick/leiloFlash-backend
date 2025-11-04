@@ -1,5 +1,5 @@
-﻿using leiloFlash_backend.DTO.Leilao;
-using leiloFlash_backend.DTO.Response;
+﻿using AutoMapper;
+using leiloFlash_backend.DTO.Leilao;
 using leiloFlash_backend.Enums;
 using leiloFlash_backend.Models;
 using leiloFlash_backend.Repositories.Leilao;
@@ -10,10 +10,12 @@ namespace leiloFlash_backend.Services.Leilao
     {
 
         private readonly ILeilaoRepository _leilaoRepository;
+        private readonly IMapper _mapper;
 
-        public LeilaoService(ILeilaoRepository leilaoRepository)
+        public LeilaoService(ILeilaoRepository leilaoRepository, IMapper mapper)
         {
             _leilaoRepository = leilaoRepository;
+            _mapper = mapper;
         }
 
         public async Task<bool> AtualizarLeilao(int id, LeilaoDTO leilaoDto)
@@ -23,12 +25,7 @@ namespace leiloFlash_backend.Services.Leilao
             if (leilao is null) throw new Exception("Leilão não encontrado");
 
 
-            leilao.Nome = leilaoDto.Nome;
-            leilao.Descricao = leilaoDto.Descricao;
-            leilao.DataInicio = leilaoDto.DataInicio;
-            leilao.DataFim = leilaoDto.DataFim;
-            leilao.UsuarioId = leilaoDto.UsuarioId;
-
+            _mapper.Map(leilaoDto, leilao);
 
             await _leilaoRepository.UpdateAsync(leilao);
             return true;
@@ -37,27 +34,14 @@ namespace leiloFlash_backend.Services.Leilao
         }
         public async Task<LeilaoResponseDTO> CriarLeilaoAsync(LeilaoDTO leilaoDto)
         {
-            var leilao = new LeilaoModel
-            {
-                Nome = leilaoDto.Nome,
-                Descricao = leilaoDto.Descricao,
-                DataInicio = leilaoDto.DataInicio,
-                DataFim = leilaoDto.DataFim,
-                UsuarioId = leilaoDto.UsuarioId,
-                StatusLeilao = StatusLeilaoEnum.Ativo
-            };
+
+            var leilao = _mapper.Map<LeilaoModel>(leilaoDto);
+
+            leilao.StatusLeilao = StatusLeilaoEnum.Ativo;
 
             await _leilaoRepository.CreateAsync(leilao);
 
-            return new LeilaoResponseDTO
-            {
-                Id = leilao.Id,
-                Nome = leilao.Nome,
-                Descricao = leilao.Descricao,
-                DataInicio = leilao.DataInicio,
-                DataFim = leilao.DataFim,
-                UsuarioId = leilao.UsuarioId
-            };
+            return _mapper.Map<LeilaoResponseDTO>(leilao);
         }
 
 
@@ -67,42 +51,25 @@ namespace leiloFlash_backend.Services.Leilao
             var sucesso = await _leilaoRepository.DeleteLeilaoAsync(id);
 
             if (!sucesso)
-                throw new Exception("Leilão não encontrado."); // regra de negócio
+                throw new Exception("Leilão não encontrado.");
 
             return true;
         }
 
-        public async Task<List<LeilaoDTO>> ListarLeiloes()
+        public async Task<List<LeilaoResponseDTO>> ListarLeiloes()
         {
             var leiloes = await _leilaoRepository.GetAllAsync();
 
-            var leiloesDto = leiloes.Select(l => new LeilaoDTO
-            {
-                Id = l.Id,
-                Nome = l.Nome,
-                Descricao = l.Descricao,
-                DataInicio = l.DataInicio,
-                DataFim = l.DataFim,
-                UsuarioId = l.UsuarioId
-            }).ToList();
-
-            return leiloesDto;
+            return _mapper.Map<List<LeilaoResponseDTO>>(leiloes);
         }
 
-        public async Task<LeilaoDTO> ObterLeilaoPorId(int id)
+        public async Task<LeilaoResponseDTO> ObterLeilaoPorId(int id)
         {
             var leilao = await _leilaoRepository.GetByIdAsync(id);
 
             if (leilao is null) throw new Exception("Leilão não encontrado");
 
-            return new LeilaoDTO
-            {
-                Nome = leilao.Nome,
-                Descricao = leilao.Descricao,
-                DataInicio = leilao.DataInicio,
-                DataFim = leilao.DataFim,
-                UsuarioId = leilao.UsuarioId
-            };
+            return _mapper.Map<LeilaoResponseDTO>(leilao);
         }
     }
 }

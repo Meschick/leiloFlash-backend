@@ -26,5 +26,7 @@ namespace leiloFlash_backend.Models
 
         [Column("valor_inicial")]
         public decimal ValorInicial { get; set; }
+
+        public ICollection<ImagemModel> Imagens { get; set; }
     }
 }

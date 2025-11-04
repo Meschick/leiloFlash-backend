@@ -26,20 +26,20 @@ namespace leiloFlash_backend.Models
         public string Senha { get; set; }
 
         [Column("tipo")]
-        public TipoUsuarioEnum Tipo { get; set; }
+        public TipoUsuarioEnum? Tipo { get; set; }
 
         [Column("cpf")]
         [StringLength(11, MinimumLength = 10, ErrorMessage = "É obrigatório ter 11 caracteres " )]
         public string? Cpf { get; set; }
 
         [Column("telefone")]
-        public string Telefone { get; set; }
+        public string? Telefone { get; set; }
 
         [Column("data_cadastro")]
-        public DateTime DataCadastro { get; set; } = DateTime.Now;
+        public DateTime? DataCadastro { get; set; } = DateTime.Now;
 
         [Column("status_usuario")]
-        public StatusEnum StatusUsuario { get; set; } = StatusEnum.Ativo;
+        public StatusEnum? StatusUsuario { get; set; } = StatusEnum.Ativo;
 
         [ForeignKey("Endereco")]
         [Column("endereco_id")]

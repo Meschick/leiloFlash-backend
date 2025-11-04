@@ -1,5 +1,6 @@
 ﻿using leiloFlash_backend.Data;
 using leiloFlash_backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace leiloFlash_backend.Repositories.Veiculo
 {
@@ -12,16 +13,14 @@ namespace leiloFlash_backend.Repositories.Veiculo
             _context = context;
         }
 
+         public async Task<List<VeiculoModel>> GetAllAsync()
+        {
+            return await _context.Veiculo.ToListAsync();
+        }
 
-        public async Task<VeiculoModel> GetById(int id)
+        public async Task<VeiculoModel> GetByIdAsync(int id)
         {
             return await _context.Veiculo.FirstOrDefaultAsync(v => v.Id == id);
         }
-
-        public async Task<VeiculoModel> GetAllAsync()
-        {
-            return await _context.Veiculo.FirstOrDefaultAsync().toList();
-        }
-
     }
 }

@@ -1,10 +1,10 @@
-﻿using leiloFlash_backend.DTO.Leilao;
-using leiloFlash_backend.Enums;
+﻿using leiloFlash_backend.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace leiloFlash_backend.Models
 {
+    [Table("Leilao")]
     public class LeilaoModel
     {
         [Key]
@@ -26,20 +26,11 @@ namespace leiloFlash_backend.Models
         [Column("status_leilao")]
         public StatusLeilaoEnum StatusLeilao { get; set; }
 
-        [ForeignKey("Usuario")]
+        [ForeignKey(nameof(Usuario))]
         [Column("usuario_id")]
         public int UsuarioId { get; set; }
-        public UsuarioModel Usuario { get; set; }
 
-        public LeilaoModel() { }
-
-        public LeilaoModel(LeilaoDTO leilaoDto)
-        {
-            Nome = leilaoDto.Nome;
-            Descricao = leilaoDto.Descricao;
-            DataInicio = leilaoDto.DataInicio;
-            DataFim = leilaoDto.DataFim;
-            UsuarioId = leilaoDto.UsuarioId;
-        }
+        public virtual UsuarioModel Usuario { get; set; }
+        public virtual ICollection<LoteModel> Lotes { get; set; } = new List<LoteModel>();
     }
 }

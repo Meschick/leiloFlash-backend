@@ -1,41 +1,30 @@
+using leiloFlash_backend.Config;
 using leiloFlash_backend.Data;
+using leiloFlash_backend.Repositories.Leilao;
+using leiloFlash_backend.Repositories.Lote;
+using leiloFlash_backend.Repositories.Veiculo;
 using leiloFlash_backend.Services;
 using leiloFlash_backend.Services.Auth;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using leiloFlash_backend.Services.Auth.Security;
 using leiloFlash_backend.Services.Leilao;
-using leiloFlash_backend.Repositories.Leilao;
+using leiloFlash_backend.Services.Pagamento;
+using leiloFlash_backend.Services.Veiculo;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);                                                                                                                                                   
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddAppCors(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddJwtConfiguration(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(Program));
 
 // Variável de conexão com o banco de dados
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-//Configura JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-            )
-        };
-    });
 
 // Adicionar serviço do SQL Server
 builder.Services.AddDbContext<LeiloDbContext>(options => options.UseSqlServer(connectionString));
@@ -45,10 +34,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISenhaService, SenhaService>();
 builder.Services.AddScoped<ILeilaoService, LeilaoService>();
+builder.Services.AddScoped<IVeiculoService, VeiculoService>();
+builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 
 
 // Adicionar Repositories
 builder.Services.AddScoped<ILeilaoRepository, LeilaoRepository>();
+builder.Services.AddScoped<IVeiculoRepository, VeiculoRepository>();
+builder.Services.AddScoped<ILoteRepository, LoteRepository>();
 
 var app = builder.Build();
 
@@ -62,7 +55,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseAppCors();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

@@ -32,13 +32,22 @@ namespace leiloFlash_backend.Repositories.Leilao
 
         public async Task<List<LeilaoModel>> GetAllAsync()
         {
-           return await _context.Leiloes.ToListAsync();
-
+           return await _context.Leiloes
+                .Include(l => l.Usuario)
+                .Include(l => l.Lotes)
+                .ThenInclude(lo => lo.Veiculo)
+                .ThenInclude(v => v.Imagens)
+                .ToListAsync();
         }
 
         public async Task<LeilaoModel> GetByIdAsync(int id)
         {
-            return await _context.Leiloes.FirstOrDefaultAsync(l => l.Id == id);
+            return await _context.Leiloes
+              .Include(l => l.Usuario)
+              .Include(l => l.Lotes)
+              .ThenInclude(lo => lo.Veiculo)
+               .ThenInclude(v => v.Imagens)
+              .FirstOrDefaultAsync(l => l.Id == id);
         }
 
         public async Task UpdateAsync(LeilaoModel leilao)

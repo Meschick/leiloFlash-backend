@@ -23,7 +23,7 @@ namespace leiloFlash_backend.Services.Auth
         public async Task<string?> LoginAsync(string email, string senha)
         {
             var user = await _context.Usuarios
-                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+                    .FirstOrDefaultAsync(u => u.Email  == email);
 
 
             if (user == null) return null;
