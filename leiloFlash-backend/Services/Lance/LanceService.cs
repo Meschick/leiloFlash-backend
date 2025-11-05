@@ -2,43 +2,50 @@
 using leiloFlash_backend.Data;
 using leiloFlash_backend.DTO.Lance;
 using leiloFlash_backend.Models;
+using leiloFlash_backend.Repositories.Lance;
+using leiloFlash_backend.Repositories.Lote;
 using Microsoft.EntityFrameworkCore;
 
 namespace leiloFlash_backend.Services.Lance
 {
-    public class LanceService
+    public class LanceService : ILanceService
     {
-        private readonly LeiloDbContext _context;
+        private readonly ILoteRepository _loteRepository;
+        private readonly ILanceRepository _lanceRepository;
         private readonly IMapper _mapper;
 
-        public LanceService(LeiloDbContext context, IMapper mapper)
+        public LanceService(ILoteRepository loteRepository,ILanceRepository lanceRepository,  IMapper mapper)
         {
-            _context = context;
+            _loteRepository = loteRepository;
+            _lanceRepository = lanceRepository;
             _mapper = mapper;
         }
-
         public async Task<LanceResponseDTO> DarLanceAsync(LanceRequestDTO request)
         {
-            var lote = await _context.Lote.FirstOrDefaultAsync(l => l.Id == request.LoteId);
-
+            var lote = await _loteRepository.GetByIdAsync( request.LoteId);
             if (lote == null)
                 throw new Exception("Lote não encontrado.");
 
             var lanceAtual = lote.ValorAtual ?? lote.ValorInicial;
             if (request.Valor <= lanceAtual)
-                throw new Exception("O valor do lance deve ser maior que o lance atual.");
+                throw new Exception("O valor do lance deve ser maior que o atual.");
 
-            // Usa AutoMapper pra converter o DTO em entidade
-            var novoLance = _mapper.Map<LanceModel>(request);
-            novoLance.DataHora = DateTime.Now;
+            var novoLance = new LanceModel
+            {
+                LoteId = request.LoteId,
+                UsuarioId = request.UsuarioId,
+                Valor = request.Valor,
+                DataHora = DateTime.Now
+            };
 
-            // Atualiza o valor do lote
             lote.ValorAtual = request.Valor;
+            lote.UltimoLanceUsuarioId = request.UsuarioId;
 
-            _context.Lance.Add(novoLance);
-            await _context.SaveChangesAsync();
+            await _lanceRepository.AdicionarLanceAsync(novoLance);
+            await _loteRepository.UpdateAsync(lote);
 
-            // Retorna o DTO de resposta mapeado
+            await _lanceRepository.SalvarAsync();
+
             return _mapper.Map<LanceResponseDTO>(novoLance);
         }
     }

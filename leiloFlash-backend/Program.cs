@@ -1,11 +1,14 @@
 using leiloFlash_backend.Config;
 using leiloFlash_backend.Data;
+using leiloFlash_backend.Hubs;
+using leiloFlash_backend.Repositories.Lance;
 using leiloFlash_backend.Repositories.Leilao;
 using leiloFlash_backend.Repositories.Lote;
 using leiloFlash_backend.Repositories.Veiculo;
 using leiloFlash_backend.Services;
 using leiloFlash_backend.Services.Auth;
 using leiloFlash_backend.Services.Auth.Security;
+using leiloFlash_backend.Services.Lance;
 using leiloFlash_backend.Services.Leilao;
 using leiloFlash_backend.Services.Pagamento;
 using leiloFlash_backend.Services.Veiculo;
@@ -22,6 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddSignalR();
 
 // Variável de conexão com o banco de dados
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -36,12 +40,15 @@ builder.Services.AddScoped<ISenhaService, SenhaService>();
 builder.Services.AddScoped<ILeilaoService, LeilaoService>();
 builder.Services.AddScoped<IVeiculoService, VeiculoService>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
+builder.Services.AddScoped<ILanceService, LanceService>();
+
 
 
 // Adicionar Repositories
 builder.Services.AddScoped<ILeilaoRepository, LeilaoRepository>();
 builder.Services.AddScoped<IVeiculoRepository, VeiculoRepository>();
 builder.Services.AddScoped<ILoteRepository, LoteRepository>();
+builder.Services.AddScoped<ILanceRepository, LanceRepository>();
 
 var app = builder.Build();
 
@@ -64,5 +71,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<LanceHub>("/lancesHub");
 
 app.Run();

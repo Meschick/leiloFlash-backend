@@ -12,7 +12,8 @@
                 {
                     policy.WithOrigins("http://localhost:4200")
                     .WithMethods("GET", "POST", "DELETE", "PATCH", "PUT", "OPTIONS")
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowCredentials();
                 });
             });
 
