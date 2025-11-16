@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using leiloFlash_backend.Data;
 
@@ -11,9 +12,11 @@ using leiloFlash_backend.Data;
 namespace leiloFlash_backend.Migrations
 {
     [DbContext(typeof(LeiloDbContext))]
-    partial class LeiloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109140519_AddNovosCampos")]
+    partial class AddNovosCampos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,8 +280,8 @@ namespace leiloFlash_backend.Migrations
 
                     b.Property<string>("Senha")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)")
                         .HasColumnName("senha");
 
                     b.Property<string>("StatusUsuario")
