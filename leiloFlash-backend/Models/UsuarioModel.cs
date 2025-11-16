@@ -21,7 +21,7 @@ namespace leiloFlash_backend.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "A senha é obrigatório")]
-        [StringLength(8, MinimumLength = 6, ErrorMessage = "A senha deve ter entre 6 a 8 caracteres.")]
+        [MaxLength(255)]
         [Column("senha")]
         public string Senha { get; set; }
 

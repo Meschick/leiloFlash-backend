@@ -22,6 +22,21 @@ namespace leiloFlash_backend.Models
         [Column("valor_final")]
         public decimal? ValorFinal { get; set; }
 
+        [Column("tipo")]
+        public string Tipo { get; set; }
+
+        [Column("tipo_retomada")]
+        public string TipoRetomado { get; set; }
+
+        [Column("valor_mercado")]
+        public decimal ValorMercado { get; set; }
+
+        [Column("localizacao")]
+        public string Localizacao { get; set; }
+
+        [Column("descricao")]
+        public string? Descricao { get; set; }
+
         [ForeignKey("Leilao")]
         [Column("leilao_id")]
         public int? LeilaoId { get; set; }
