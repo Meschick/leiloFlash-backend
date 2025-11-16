@@ -10,6 +10,7 @@ using leiloFlash_backend.Services.Auth;
 using leiloFlash_backend.Services.Auth.Security;
 using leiloFlash_backend.Services.Lance;
 using leiloFlash_backend.Services.Leilao;
+using leiloFlash_backend.Services.Lote;
 using leiloFlash_backend.Services.Pagamento;
 using leiloFlash_backend.Services.Veiculo;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,6 +42,7 @@ builder.Services.AddScoped<ILeilaoService, LeilaoService>();
 builder.Services.AddScoped<IVeiculoService, VeiculoService>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 builder.Services.AddScoped<ILanceService, LanceService>();
+builder.Services.AddScoped<ILoteService, LoteService>();
 
 
 

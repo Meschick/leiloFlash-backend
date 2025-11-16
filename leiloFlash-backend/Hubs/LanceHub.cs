@@ -13,25 +13,29 @@ namespace leiloFlash_backend.Hubs
             _lanceService = lanceService;
         }
 
-        public async Task EnviarLance(LanceRequestDTO request, string nomeUsuario)
+        public async Task EnviarLance(LanceRequestDTO request, string email)
         {
+            Console.WriteLine($"🔥 MÉTODO HUB EXECUTADO - Usuario: {email}, LoteId: {request.LoteId}, Valor: {request.Valor}");
             try
             {
                 var lance = await _lanceService.DarLanceAsync(request);
 
-                // Notifica todos conectados (front-end)
+                Console.WriteLine($"✅ LANCE PROCESSADO - Valor: {lance.Valor}, Usuario: {email}");
+
                 await Clients.All.SendAsync("ReceberLance", new
                 {
                     LoteId = lance.LoteId,
                     Valor = lance.Valor,
-                    Usuario = nomeUsuario,
+                    EmailUsuario = email,
                     DataHora = lance.DataHora
                 });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ ERRO AO DAR LANCE: {ex.Message}");
                 await Clients.Caller.SendAsync("ErroAoDarLance", ex.Message);
             }
         }
+
     }
 }

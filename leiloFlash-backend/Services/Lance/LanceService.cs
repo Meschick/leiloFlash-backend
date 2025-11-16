@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using leiloFlash_backend.Data;
 using leiloFlash_backend.DTO.Lance;
+using leiloFlash_backend.DTO.Lote;
 using leiloFlash_backend.Models;
 using leiloFlash_backend.Repositories.Lance;
 using leiloFlash_backend.Repositories.Lote;
@@ -26,8 +27,12 @@ namespace leiloFlash_backend.Services.Lance
             if (lote == null)
                 throw new Exception("Lote não encontrado.");
 
-            var lanceAtual = lote.ValorAtual ?? lote.ValorInicial;
-            if (request.Valor <= lanceAtual)
+            if (DateTime.Now < lote.Leilao.DataInicio || DateTime.Now > lote.Leilao.DataFim)
+            {
+                throw new Exception("O leilão não está ativo!");
+            }
+
+            if (request.Valor <= lote.ValorAtual)
                 throw new Exception("O valor do lance deve ser maior que o atual.");
 
             var novoLance = new LanceModel
@@ -42,11 +47,23 @@ namespace leiloFlash_backend.Services.Lance
             lote.UltimoLanceUsuarioId = request.UsuarioId;
 
             await _lanceRepository.AdicionarLanceAsync(novoLance);
+
             await _loteRepository.UpdateAsync(lote);
 
             await _lanceRepository.SalvarAsync();
 
             return _mapper.Map<LanceResponseDTO>(novoLance);
+        }
+
+        public async Task<IEnumerable<HistoricoResponseDTO>> HistoricoPorLote(int loteId)
+        {
+            var lote = await _loteRepository.GetByIdAsync(loteId);
+
+            if(lote is null) throw new Exception("Lote não encontrado.");
+
+            var historico = await _lanceRepository.GetHistoryByLoteIdAsync(loteId);
+
+            return _mapper.Map<IEnumerable<HistoricoResponseDTO>>(historico);
         }
     }
 }

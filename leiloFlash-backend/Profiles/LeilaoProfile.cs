@@ -13,30 +13,39 @@ namespace leiloFlash_backend.Profiles
     {
         public LeilaoProfile()
         {
-            // Lote
+     
             CreateMap<LoteModel, LoteResponseDTO>();
             CreateMap<LoteDTO, LoteModel>();
 
-            // Leilão
             CreateMap<LeilaoModel, LeilaoResponseDTO>()
                 .ForMember(dest => dest.StatusLeilao, opt => opt.MapFrom(src => src.StatusLeilao.ToString()));
 
-            // Lote
-            CreateMap<LoteModel, LoteResponseDTO>();
+            CreateMap<LoteModel, LoteResponseDTO>()
+                 .ForMember(dest => dest.DataInicio, opt => opt.MapFrom(src => src.Leilao.DataInicio))
+                 .ForMember(dest => dest.DataFim, opt => opt.MapFrom(src => src.Leilao.DataFim));
+
             CreateMap<LoteDTO, LoteModel>();
 
-            // Veículo
             CreateMap<VeiculoModel, VeiculoResponseDTO>();
 
-            // Imagem
             CreateMap<ImagemModel, ImagemResponseDTO>();
 
-            // Usuário
             CreateMap<UsuarioModel, UsuarioResponseDTO>();
 
-            // 👇 Lance
             CreateMap<LanceModel, LanceResponseDTO>();
             CreateMap<LanceRequestDTO, LanceModel>();
+
+            CreateMap<LanceModel, HistoricoResponseDTO>()
+                .ForMember(dest => dest.EmailUsuario,
+                opt => opt.MapFrom(src => src.Usuario.Email));
+
+            CreateMap<LoteModel, FinalizarLoteResponseDTO>()
+                .ForMember(dest => dest.UsuarioVencedorId,
+                    opt => opt.MapFrom(src => src.UltimoLanceUsuarioId))
+                  .ForMember(dest => dest.EmailUsuarioVencedor,
+                    opt => opt.MapFrom(src => src.UltimoLanceUsuario.Email))
+     .                  ForMember(dest => dest.ValorFinal,
+                          opt => opt.MapFrom(src => src.ValorFinal));
         }
     }
 }

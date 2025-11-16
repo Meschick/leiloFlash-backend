@@ -12,15 +12,6 @@ namespace leiloFlash_backend.Repositories.Lote
         {
             _context = context;
         }
-        public async Task<LoteModel?> GetByIdAsync(int id)
-        {
-            return await _context.Lote
-                .Include(l => l.Usuario)
-                .Include(l => l.Veiculo)
-                .Include(l => l.Leilao)
-                .FirstOrDefaultAsync(l => l.Id == id);
-        }
-
         public async Task<IEnumerable<LoteModel>> GetAllAsync()
         {
             return await _context.Lote
@@ -30,6 +21,16 @@ namespace leiloFlash_backend.Repositories.Lote
                 .ToListAsync();
         }
 
+        public async Task<LoteModel?> GetByIdAsync(int id)
+        {
+            return await _context.Lote
+                .Include(l => l.Usuario)
+                .Include(l => l.Veiculo)
+                .ThenInclude(v => v.Imagens)
+                .Include(l => l.Leilao)
+                .FirstOrDefaultAsync(l => l.Id == id);
+        }
+    
         public async Task CreateAsync(LoteModel lote)
         {
             _context.Lote.Add(lote);
