@@ -8,6 +8,8 @@
         public int Ano { get; set; }
         public string Cor { get; set; }
         public decimal KmAtual { get; set; }
+
+        public bool PossuiChave { get; set; }
         public decimal valorInicial { get; set; }
     }
 }
