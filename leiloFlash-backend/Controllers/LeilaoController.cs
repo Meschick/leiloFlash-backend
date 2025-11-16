@@ -20,7 +20,6 @@ namespace leiloFlash_backend.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/v1/leilao
         [HttpGet]
         public async Task<IActionResult> ListarLeiloes()
         {
@@ -35,7 +34,7 @@ namespace leiloFlash_backend.Controllers
             return Ok(response);
         }
 
-        // GET: api/v1/leilao/{id}
+
         [HttpGet("{id}")]
         public async Task<IActionResult> ObterLeilaoPorId(int id)
         {
@@ -61,7 +60,6 @@ namespace leiloFlash_backend.Controllers
             }
         }
 
-        // POST: api/v1/leilao
         [HttpPost]
         public async Task<IActionResult> CriarLeilao([FromBody] LeilaoDTO leilaoDto)
         {
@@ -89,7 +87,7 @@ namespace leiloFlash_backend.Controllers
             );
         }
 
-        // PUT: api/v1/leilao/{id}
+
         [HttpPut("{id}")]
         public async Task<IActionResult> AtualizarLeilao(int id, [FromBody] LeilaoDTO leilaoDto)
         {
@@ -123,7 +121,6 @@ namespace leiloFlash_backend.Controllers
             }
         }
 
-        // DELETE: api/v1/leilao/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletarLeilao(int id)
         {
