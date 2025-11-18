@@ -1,8 +1,14 @@
 ﻿using leiloFlash_backend.DTO.MercadoPago;
+using leiloFlash_backend.DTO.Pagamento;
+using leiloFlash_backend.DTO.Pagamento.Cartao;
+using leiloFlash_backend.DTO.Pagamento.Pix;
 using leiloFlash_backend.Repositories.Lote;
 using MercadoPago;
+using MercadoPago.Client.Common;
+using MercadoPago.Client.Payment;
 using MercadoPago.Client.Preference;
 using MercadoPago.Config;
+using MercadoPago.Resource.Payment;
 using MercadoPago.Resource.Preference;
 
 namespace leiloFlash_backend.Services.Pagamento
@@ -19,44 +25,72 @@ namespace leiloFlash_backend.Services.Pagamento
             MercadoPagoConfig.AccessToken = _configuration["MercadoPago:AccessToken"];
         }
 
-        public async Task<MercadoPagoPreferenceResponseDTO> CriarPreferenciaPagamento(int loteId)
+
+        // ===================== PIX =====================
+        public async Task<CriarPagamentoPixResponseDTO> CriarPagamentoPix(CriarPagamentoPixRequestDTO request)
         {
-            var lote = await _loteRepository.GetByIdAsync(loteId);
+            var lote = await _loteRepository.GetByIdAsync(request.LoteId);
+            if (lote == null)
+                throw new Exception("Lote não encontrado.");
 
-            if (lote is null) throw new Exception("Lote não encontrado.");
+            var paymentClient = new PaymentClient();
 
-            var cliente = new PreferenceClient();
-
-            var preferenceRequest = new PreferenceRequest
+            var paymentRequest = new PaymentCreateRequest
             {
-                Items = new List<PreferenceItemRequest>
-                {
-                    new PreferenceItemRequest
-                    {
-                        Title = $"Lote {lote.NumeroLote} - Leilão {lote.LeilaoId}",
-                        Quantity = 1,
-                        UnitPrice = Convert.ToDecimal(lote.ValorFinal)
-                    }
-                },
-                Payer = new PreferencePayerRequest
-                {
-                    Email = "test_user_123@test.com"
-                },
-                BackUrls = new PreferenceBackUrlsRequest
-                {
-                    Success = "https://seusite.com/sucesso",
-                    Failure = "https://seusite.com/falha",
-                    Pending = "https://seusite.com/pendente"
-                },
-                AutoReturn = "approved"
+                TransactionAmount = request.Valor,
+                Description = $"Pagamento PIX do lote Nº {lote.NumeroLote}",
+                PaymentMethodId = "pix",
+
+                     Payer = new PaymentPayerRequest
+                     {
+                         Email = "teste@teste.com"
+                     }
             };
 
-            var preference = await cliente.CreateAsync(preferenceRequest);
+            Payment payment = await paymentClient.CreateAsync(paymentRequest);
 
-            return new MercadoPagoPreferenceResponseDTO
+            return new CriarPagamentoPixResponseDTO
             {
-                InitPoint = preference.InitPoint,
-                PreferenceId = preference.Id
+                Status = payment.Status,
+                PaymentId = payment.Id.ToString(),
+                QrCodeBase64 = payment.PointOfInteraction?.TransactionData?.QrCodeBase64,
+                QrCode = payment.PointOfInteraction?.TransactionData?.QrCode
+            };
+        }
+
+
+        // ===================== CARTÃO =====================
+        public async Task<CriarPagamentoCartaoResponseDTO> CriarPagamentoCartao(CriarPagamentoCartaoRequestDTO request)
+        {
+            var lote = await _loteRepository.GetByIdAsync(request.LoteId);
+            if (lote == null)
+                throw new Exception("Lote não encontrado.");
+
+            var paymentClient = new PaymentClient();
+
+            var paymentRequest = new PaymentCreateRequest
+            {
+                TransactionAmount = request.Valor,
+                Description = $"Pagamento com cartão — lote Nº {lote.NumeroLote}",
+                Token = request.Token,
+                PaymentMethodId = request.PaymentMethodId,
+                Installments = request.Installments,
+                Payer = new PaymentPayerRequest
+                {
+                    Identification = new IdentificationRequest
+                    {
+                        Type = request.IdentificationType,
+                        Number = request.IdentificationNumber
+                    }
+                }
+            };
+
+            Payment payment = await paymentClient.CreateAsync(paymentRequest);
+
+            return new CriarPagamentoCartaoResponseDTO
+            {
+                Status = payment.Status,
+                PaymentId = payment.Id.ToString()
             };
         }
     }

@@ -46,6 +46,24 @@ namespace leiloFlash_backend.Profiles
                     opt => opt.MapFrom(src => src.UltimoLanceUsuario.Email))
      .                  ForMember(dest => dest.ValorFinal,
                           opt => opt.MapFrom(src => src.ValorFinal));
+
+
+            CreateMap<LoteModel, LotesArrematadosResponseDTO>()
+                .ForMember(dest => dest.LoteId,
+                    opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.NomeVeiculo,
+                     opt => opt.MapFrom(src =>
+                     src.Veiculo != null ? $"{src.Veiculo.Marca} {src.Veiculo.Modelo}" : null))
+                 .ForMember(dest => dest.Ano,
+                     opt => opt.MapFrom(src => src.Veiculo != null ? src.Veiculo.Ano : 0))
+                .ForMember(dest => dest.ImagemUrl,
+                     opt => opt.MapFrom(src =>
+                     src.Veiculo != null && src.Veiculo.Imagens.Any()
+                  ? src.Veiculo.Imagens.First().Url
+                  : null
+             ));
+
+
         }
     }
 }

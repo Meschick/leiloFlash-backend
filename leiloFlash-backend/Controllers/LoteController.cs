@@ -47,29 +47,29 @@ namespace leiloFlash_backend.Controllers
             }
         }
 
-        //[HttpGet("arrematados/{usuarioId}")]
-        //public async Task<IActionResult> ObterLotesArrematadosPorUsuario(int usuarioId)
-        //{
-        //    try
-        //    {
-        //        var lotes = await _loteService.ObterLotesArramatados(usuarioId);
+        [HttpGet("arrematados/{usuarioId}")]
+        public async Task<IActionResult> ObterLotesArrematadosPorUsuario(int usuarioId)
+        {
+            try
+            {
+                var lotes = await _loteService.ObterLotesArramatados(usuarioId);
 
-        //        var response = new ApiResponseDTO<List<LoteResponseDTO>>(
-        //            sucesso: true,
-        //            mensagem: "Lotes arrematados encontrados com sucesso.",
-        //            data: _mapper.Map<List<LoteResponseDTO>>(lotes)
-        //            );
-        //        return Ok(response);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        var response = new ApiResponseDTO<object>(
-        //            sucesso: false,
-        //            mensagem: e.Message
-        //            );
-        //        return NotFound(response);
-        //    }
-        //}
+                var response = new ApiResponseDTO<IEnumerable<LotesArrematadosResponseDTO>>(
+                    sucesso: true,
+                    mensagem: "Lotes arrematados encontrados com sucesso.",
+                    data: _mapper.Map<IEnumerable<LotesArrematadosResponseDTO>>(lotes)
+                    );
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                var response = new ApiResponseDTO<object>(
+                    sucesso: false,
+                    mensagem: e.Message
+                    );
+                return NotFound(response);
+            }
+        }
 
         [HttpPost("{loteId}/finalizar")]
         public async Task<IActionResult> FinalizarLote(int loteId)

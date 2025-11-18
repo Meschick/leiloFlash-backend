@@ -1,10 +1,14 @@
-﻿using leiloFlash_backend.Services.Pagamento;
+﻿using leiloFlash_backend.DTO.Pagamento;
+using leiloFlash_backend.DTO.Pagamento.Cartao;
+using leiloFlash_backend.DTO.Pagamento.Pix;
+using leiloFlash_backend.DTO.Response;
+using leiloFlash_backend.Services.Pagamento;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leiloFlash_backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class PagamentoController : Controller
     {
         private readonly IPagamentoService _pagamentoService;
@@ -14,16 +18,31 @@ namespace leiloFlash_backend.Controllers
             _pagamentoService = pagamentoService;
         }
 
-
-        [HttpPost("criar-preferencia/{loteId}")]
-        public async Task<IActionResult> CriarPreferencia(int loteId)
+        // ===================== PIX =====================
+        [HttpPost("pix")]
+        public async Task<IActionResult> CriarPagamentoPix([FromBody] CriarPagamentoPixRequestDTO dto)
         {
-            var preference = await _pagamentoService.CriarPreferenciaPagamento(loteId);
+            var resultado = await _pagamentoService.CriarPagamentoPix(dto);
 
-            if (preference == null)
-                return NotFound(new { mensagem = "Lote não encontrado" });
+            return Ok(new ApiResponseDTO<CriarPagamentoPixResponseDTO>(
+                sucesso: true,
+                mensagem: "Pagamento PIX criado com sucesso.",
+                data: resultado
+            ));
+        }
 
-            return Ok(preference);
+
+        // ===================== CARTÃO =====================
+        [HttpPost("cartao")]
+        public async Task<IActionResult> CriarPagamentoCartao([FromBody] CriarPagamentoCartaoRequestDTO dto)
+        {
+            var resultado = await _pagamentoService.CriarPagamentoCartao(dto);
+
+            return Ok(new ApiResponseDTO<CriarPagamentoCartaoResponseDTO>(
+                sucesso: true,
+                mensagem: "Pagamento com cartão criado com sucesso.",
+                data: resultado
+            ));
         }
     }
 }

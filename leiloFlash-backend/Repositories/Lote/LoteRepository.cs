@@ -30,7 +30,16 @@ namespace leiloFlash_backend.Repositories.Lote
                 .Include(l => l.Leilao)
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
-    
+
+        public async Task<IEnumerable<LoteModel>> GetLotesArrematadosPorUsuarioAsync(int usuarioId)
+        {
+            return await _context.Lote
+                .Include(l => l.Veiculo)
+                .ThenInclude(v => v.Imagens)
+                .Where(l => l.UltimoLanceUsuarioId == usuarioId)
+                .ToListAsync();
+        }
+
         public async Task CreateAsync(LoteModel lote)
         {
             _context.Lote.Add(lote);
