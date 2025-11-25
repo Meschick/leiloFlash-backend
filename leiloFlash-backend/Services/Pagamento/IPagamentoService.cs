@@ -7,6 +7,7 @@ namespace leiloFlash_backend.Services.Pagamento
 {
     public interface IPagamentoService
     {
+        Task<string> CriarPreferenciaPagamentoCartao(CriarPreferenciaRequestDTO request);
         Task<CriarPagamentoPixResponseDTO> CriarPagamentoPix(CriarPagamentoPixRequestDTO request);
         Task<CriarPagamentoCartaoResponseDTO> CriarPagamentoCartao(CriarPagamentoCartaoRequestDTO request);
     }

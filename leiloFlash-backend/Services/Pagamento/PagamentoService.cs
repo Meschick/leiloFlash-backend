@@ -11,6 +11,7 @@ using MercadoPago.Config;
 using MercadoPago.Resource.Payment;
 using MercadoPago.Resource.Preference;
 
+
 namespace leiloFlash_backend.Services.Pagamento
 {
     public class PagamentoService : IPagamentoService
@@ -25,8 +26,6 @@ namespace leiloFlash_backend.Services.Pagamento
             MercadoPagoConfig.AccessToken = _configuration["MercadoPago:AccessToken"];
         }
 
-
-        // ===================== PIX =====================
         public async Task<CriarPagamentoPixResponseDTO> CriarPagamentoPix(CriarPagamentoPixRequestDTO request)
         {
             var lote = await _loteRepository.GetByIdAsync(request.LoteId);
@@ -59,7 +58,6 @@ namespace leiloFlash_backend.Services.Pagamento
         }
 
 
-        // ===================== CARTÃO =====================
         public async Task<CriarPagamentoCartaoResponseDTO> CriarPagamentoCartao(CriarPagamentoCartaoRequestDTO request)
         {
             var lote = await _loteRepository.GetByIdAsync(request.LoteId);
@@ -75,8 +73,10 @@ namespace leiloFlash_backend.Services.Pagamento
                 Token = request.Token,
                 PaymentMethodId = request.PaymentMethodId,
                 Installments = request.Installments,
+                IssuerId = request.IssuerId,
                 Payer = new PaymentPayerRequest
                 {
+                    Email = request.Email,
                     Identification = new IdentificationRequest
                     {
                         Type = request.IdentificationType,
@@ -92,6 +92,44 @@ namespace leiloFlash_backend.Services.Pagamento
                 Status = payment.Status,
                 PaymentId = payment.Id.ToString()
             };
+        }
+
+
+        public async Task<string> CriarPreferenciaPagamentoCartao(CriarPreferenciaRequestDTO request)
+        {
+            var lote = await _loteRepository.GetByIdAsync(request.LoteId);
+            if (lote == null)
+                throw new Exception("Lote não encontrado.");
+
+      
+            var item = new PreferenceItemRequest
+            {
+                Title = $"Pagamento Lote Nº {lote.NumeroLote}",
+                Description = "Pagamento com cartão de crédito/débito.",
+                Quantity = 1,
+                CurrencyId = "BRL",
+                UnitPrice = request.Valor
+            };
+
+            var payer = new PreferencePayerRequest
+            {
+                Email = "teste@teste.com"
+            };
+
+            var preferenceRequest = new PreferenceRequest
+            {
+                Items = new List<PreferenceItemRequest> { item },
+                Payer = payer,
+                PaymentMethods = new PreferencePaymentMethodsRequest
+                {
+                    Installments = 12 
+                },
+            };
+
+            var preferenceClient = new PreferenceClient();
+
+            Preference preference = await preferenceClient.CreateAsync(preferenceRequest);
+            return preference.Id;
         }
     }
 }

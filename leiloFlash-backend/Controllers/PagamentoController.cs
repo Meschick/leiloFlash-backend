@@ -18,7 +18,6 @@ namespace leiloFlash_backend.Controllers
             _pagamentoService = pagamentoService;
         }
 
-        // ===================== PIX =====================
         [HttpPost("pix")]
         public async Task<IActionResult> CriarPagamentoPix([FromBody] CriarPagamentoPixRequestDTO dto)
         {
@@ -32,7 +31,6 @@ namespace leiloFlash_backend.Controllers
         }
 
 
-        // ===================== CARTÃO =====================
         [HttpPost("cartao")]
         public async Task<IActionResult> CriarPagamentoCartao([FromBody] CriarPagamentoCartaoRequestDTO dto)
         {
@@ -42,6 +40,18 @@ namespace leiloFlash_backend.Controllers
                 sucesso: true,
                 mensagem: "Pagamento com cartão criado com sucesso.",
                 data: resultado
+            ));
+        }
+
+        [HttpPost("preferencia")]
+        public async Task<IActionResult> CriarPreferenciaPagamentoCartao([FromBody] CriarPreferenciaRequestDTO dto)
+        {
+            var preferenceId = await _pagamentoService.CriarPreferenciaPagamentoCartao(dto);
+
+            return Ok(new ApiResponseDTO<string>(
+                sucesso: true,
+                mensagem: "Preferência de pagamento criada com sucesso.",
+                data: preferenceId
             ));
         }
     }
