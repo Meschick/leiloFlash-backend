@@ -20,8 +20,6 @@
             return service;
         }
 
-
-
         public static IApplicationBuilder UseAppCors(this IApplicationBuilder app)
         {
             app.UseCors(CorsPolicyName);

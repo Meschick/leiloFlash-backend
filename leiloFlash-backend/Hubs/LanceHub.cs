@@ -15,13 +15,9 @@ namespace leiloFlash_backend.Hubs
 
         public async Task EnviarLance(LanceRequestDTO request, string email)
         {
-            Console.WriteLine($"🔥 MÉTODO HUB EXECUTADO - Usuario: {email}, LoteId: {request.LoteId}, Valor: {request.Valor}");
             try
             {
                 var lance = await _lanceService.DarLanceAsync(request);
-
-                Console.WriteLine($"✅ LANCE PROCESSADO - Valor: {lance.Valor}, Usuario: {email}");
-
                 await Clients.All.SendAsync("ReceberLance", new
                 {
                     LoteId = lance.LoteId,
@@ -32,7 +28,6 @@ namespace leiloFlash_backend.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ ERRO AO DAR LANCE: {ex.Message}");
                 await Clients.Caller.SendAsync("ErroAoDarLance", ex.Message);
             }
         }
